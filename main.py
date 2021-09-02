@@ -7,7 +7,6 @@ import networkx as nx
 import time
 from loader import *
 from utils import sparse_to_tuple
-# from utils import preprocess_graph
 from models import Learning
 from models import Graph_Diffusion_Convolution
 from evaluation import *
@@ -39,16 +38,14 @@ print('----------args----------\n')
 
 
 def main():
-	assembly_graph, constraints, ground_truth, Gx = load_data(args.dataset) #sparse, numpy, dict, networkx
-	print(assembly_graph.shape, len(constraints), len(ground_truth)) #(519,519) (91,5) 509
+	assembly_graph, constraints, ground_truth, Gx = load_data(args.dataset)
+	print(assembly_graph.shape, len(constraints), len(ground_truth))
 	print(len(list(set([val for key,val in ground_truth.items()]))))
-
 	triplets = sample_constraints(constraints, ground_truth)
 
-
 	adj = Graph_Diffusion_Convolution(assembly_graph, args.alpha, args.eps)
-	feats = assembly_graph.todense() #dense
-	adj = sparse_to_tuple(adj) #tuple
+	adj = sparse_to_tuple(adj)
+	feats = assembly_graph.todense()
 	model = Learning(feats.shape[0], args.hid_dim, args.n_clusters, args)
 	pred_labels = model.train(adj, feats, Gx, triplets, constraints, ground_truth)
 	

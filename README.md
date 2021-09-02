@@ -18,7 +18,7 @@ pytorch == 1.3.1
 ## Example Usage
 To reproduce the experiments on Sim-5G dataset, simply run:
 ```
-python3 train.py
+python3 main.py --dataset Sim-5G --n_clusters 5 --patience 20
 ```
 
 ## Reference

@@ -67,7 +67,7 @@ def validate_performance(true_labels, pred_labels):
 	n_true_labels = len(np.unique([v for k,v in true_labels.items()]))
 	n_pred_labels = len(np.unique([v for k,v in pred_labels.items()]))
 	# print(np.unique([v for k,v in pred_labels.items()]))
-	print(n_true_labels, n_pred_labels)
+	# print(n_true_labels, n_pred_labels)
 	ground_truth_count = len(true_labels)
 	# print(n_true_labels, n_pred_labels)
 	total_binned = 0
@@ -83,7 +83,7 @@ def validate_performance(true_labels, pred_labels):
 	my_f1 = getF1(my_precision, my_recall)
 
 	# print("### Evaluation:")
-	print("### Precision = %0.4f  Recall = %0.4f  F1 = %0.4f ARI = %0.4f" % (my_precision, my_recall, my_f1, my_ari))
+	# print("### Precision = %0.4f  Recall = %0.4f  F1 = %0.4f ARI = %0.4f" % (my_precision, my_recall, my_f1, my_ari))
 	return my_precision, my_recall, my_ari, my_f1
 
 

@@ -171,7 +171,7 @@ def load_assembly_graph(assembly_graph_file, node_count, contigs_map, paths, seg
 	for edge in edge_list:
 		adj[edge[0],edge[1]] = 1.0
 		adj[edge[1],edge[0]] = 1.0
-	print(len(edge_list))
+	# print(len(edge_list))
 	adj_sp = sp.csr_matrix(adj)
 	return adj_sp, edge_list
 
@@ -204,7 +204,7 @@ def load_contigs_fasta(contigs_file, contigs_map):
 def load_assembly_graph_constraints(datatype):
 	file_path = 'dataset/'+datatype+'/'
 	contigs_num,contigs_map,paths,segment_contigs = load_contigs(file_path+'contigs.paths')
-	print("### Total number of contigs available: {:d}".format(contigs_num))
+	# print("### Total number of contigs available: {:d}".format(contigs_num))
 	assembly_graph, edges = load_assembly_graph(file_path+'assembly_graph_with_scaffolds.gfa',contigs_num,contigs_map,paths,segment_contigs)
 	constraints, matrix_cons = load_contigs_fasta_markers(file_path+'contigs.fasta.markers', contigs_map)
 	return assembly_graph, constraints, np.array(edges), contigs_map
@@ -247,14 +247,14 @@ def filter_isolatedNodes(assembly_graph, constraints, edges, ground_truth_dict, 
 		if Gx.degree(idx) == 0:
 			isoNodes.append(idx)
 
-	print(len(isoNodes)) #21570
+	# print(len(isoNodes)) #21570
 	nodes = [idx for idx in range(assembly_graph.shape[0])]
 	diffNodes = list(set(nodes).difference(set(isoNodes)))
-	print(len(diffNodes)) #20743
+	# print(len(diffNodes)) #20743
 	nodeIDsMap = {j:i for i,j in enumerate(diffNodes)}
 	# print(nodeIDsMap)
 	newEdges = [[nodeIDsMap[line[0]], nodeIDsMap[line[1]]] for line in edges]
-	print(len(edges), len(newEdges))
+	# print(len(edges), len(newEdges))
 	newConstraints = []
 	for line in constraints:
 		temp = []
@@ -262,13 +262,13 @@ def filter_isolatedNodes(assembly_graph, constraints, edges, ground_truth_dict, 
 			if val in diffNodes:
 				temp.append(nodeIDsMap[val])
 		newConstraints.append(temp)
-	print(len(constraints), len(newConstraints))
+	# print(len(constraints), len(newConstraints))
 
 	newGroundTruth = dict()
 	for key,val in ground_truth_dict.items():
 		if key in diffNodes:
 			newGroundTruth[nodeIDsMap[key]] = val
-	print(len(ground_truth_dict), len(newGroundTruth))
+	# print(len(ground_truth_dict), len(newGroundTruth))
 
 	Gx = nx.Graph()
 	Gx.add_nodes_from(diffNodes)

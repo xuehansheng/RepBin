@@ -63,7 +63,7 @@ def sample_constraints(cons, ground_truth):
 			all_pairs.append([pair[1], pair[0]])
 			all_pairs_cnt.append(str(pair[0])+'_'+str(pair[1]))
 			all_pairs_cnt.append(str(pair[1])+'_'+str(pair[0]))
-	print("### Number of constraint pairs(sym):", len(all_pairs))
+	# print("### Number of constraint pairs(sym):", len(all_pairs))
 	from collections import Counter
 	all_pairs_cnt_dict = Counter(all_pairs_cnt)
 
@@ -74,6 +74,6 @@ def sample_constraints(cons, ground_truth):
 			node_b = int(key.split('_')[1])
 			# if adj[node_a,node_b] == 0.0 and adj[node_b,node_a] == 0.0:
 			all_pairs_new.append([node_a, node_b])
-	print("### Number of extracted constraint pairs(sym):", len(all_pairs_new))
+	# print("### Number of extracted constraint pairs(sym):", len(all_pairs_new))
 	# return np.array(all_pairs_new)
 	return np.array(all_pairs)

@@ -26,7 +26,7 @@ parser.add_argument('--epochs', type=int, default=10000, help='Number of epochs.
 parser.add_argument('--hid_dim', type=int, default=32, help='Dimension of hidden2.')
 parser.add_argument('--batch_size', type=int, default=1, help='Number of batch size.')
 parser.add_argument('--weight_decay', type=float, default=5e-4, help='Weight for L2 loss on embedding matrix.')
-parser.add_argument('--patience', type=int, default=50, help='Patience for early stopping (# of epochs).')
+parser.add_argument('--patience', type=int, default=20, help='Patience for early stopping (# of epochs).')
 parser.add_argument('--lamb', type=float, default=0.2, help='Weight to balance constraints.')
 
 args = parser.parse_args()
@@ -39,9 +39,10 @@ print('----------args----------\n')
 
 def main():
 	assembly_graph, constraints, ground_truth, Gx = load_data(args.dataset)
-	print(assembly_graph.shape, len(constraints), len(ground_truth))
-	print(len(list(set([val for key,val in ground_truth.items()]))))
+	# print(assembly_graph.shape, len(constraints), len(ground_truth))
+	# print(len(list(set([val for key,val in ground_truth.items()]))))
 	triplets = sample_constraints(constraints, ground_truth)
+	# print(constraints)
 
 	adj = Graph_Diffusion_Convolution(assembly_graph, args.alpha, args.eps)
 	adj = sparse_to_tuple(adj)

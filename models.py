@@ -20,6 +20,7 @@ from collections import Counter
 from evaluation import validate_performance,validate_ARI_NMI
 import time
 
+
 def Graph_Diffusion_Convolution(A: sp.csr_matrix, alpha: float, eps: float):
 	N = A.shape[0]
 	# Self-loops
@@ -61,12 +62,14 @@ class Learning:
 		b_xent = nn.BCEWithLogitsLoss()
 		cnt_wait, best, best_t = 0, 1e9, 0
 
-		print("--------trainable parameters--------")
-		print(self.model)
-		for parameter in self.model.parameters():
-			print(parameter.shape)
-		print("--------trainable parameters--------")
-		print()
+		print("### Step 1: Constraint-based Learning model.")
+
+		# print("--------trainable parameters--------")
+		# print(self.model)
+		# for parameter in self.model.parameters():
+		# 	print(parameter.shape)
+		# print("--------trainable parameters--------")
+		# print()
 
 		list_loss,list_losss,list_lossc = [],[],[]
 		list_p,list_r,list_f1,list_ari = [],[],[],[]
@@ -106,35 +109,35 @@ class Learning:
 		self.model.load_state_dict(torch.load('best_model.pkl'))
 		self.model.eval()
 		embeds, _ = self.model.embed(feats, adj, True)
-		print(embeds.shape)
+		# print(embeds.shape)
 		print("### Optimization Finished!")
-		print("### Run K-Means Clustering Algorithm:")
+		# print("### Run K-Means Clustering Algorithm:")
 		true_labels = ground_truth
-		print(Counter([v for k,v in true_labels.items()]))
+		# print(Counter([v for k,v in true_labels.items()]))
 		# np.save('Sharon_emb_12.npy', embeds.cpu().detach().numpy())
 		# embs = np.load('Sharon_emb_12.npy')
-		pred_labels = Clustering(embeds.cpu().detach().numpy(), true_labels, constraints, Gx, n_clusters=self.args.n_clusters)
-		pred_labels = Cluster(embeds.cpu().detach().numpy(), true_labels, n_clusters=self.args.n_clusters)
+		# pred_labels = Clustering(embeds.cpu().detach().numpy(), true_labels, constraints, Gx, n_clusters=self.args.n_clusters)
+		# pred_labels = Cluster(embeds.cpu().detach().numpy(), true_labels, n_clusters=self.args.n_clusters)
 
 
-		print("\n### Evaluate the performance of constraints.")
+		# print("\n### Evaluate the performance of constraints.")
 		lbls_idx = [k for k,v in true_labels.items()]
 		# CNTs = Counter([val for line in constraints for val in line])
 		# cons = list(set([val for line in constraints for val in line])) #80/265 131/413
 		cons = [val for line in constraints for val in line if val in lbls_idx]
-		print(len(cons)) #804
+		# print(len(cons)) #804
 		# cons = list(set(cons))
-		print(len(list(set(cons)))) #223
-		print(Counter(cons))
+		# print(len(list(set(cons)))) #223
+		# print(Counter(cons))
 		# cons = [k for k,v in Counter(cons).items() if v>3]
 		cons = [k for k,v in Counter(cons).items() if v>3]
 		# print(cons)
-		print(len(cons))
-		print(len(Counter([true_labels[c] for c in cons])),Counter([true_labels[c] for c in cons]))
+		# print(len(cons))
+		# print(len(Counter([true_labels[c] for c in cons])),Counter([true_labels[c] for c in cons]))
 		n_clusters = len(Counter([true_labels[c] for c in cons]))
 		# n_clusters = self.args.n_clusters
 		embs = embeds.cpu().detach().numpy()[cons]
-		print(embs.shape)
+		# print(embs.shape)
 		# embs = embs[cons]
 		labels = list(set([true_labels[i] for i in cons]))
 		# print(len(labels))
@@ -148,18 +151,18 @@ class Learning:
 		y_pred = kmeans.fit_predict(embs)
 
 		# # print(y_pred)
-		print(len(Counter(y_pred)),Counter(y_pred))
+		# print(len(Counter(y_pred)),Counter(y_pred))
 		pred_labels = {i:j for i,j in enumerate(y_pred)}
 		# pred_labels = {i:y_pred[i] for i,idx in enumerate(cons)}
 		p, r, ari, f1 = validate_performance(lbls, pred_labels)
-		print("Precision = %0.4f  Recall = %0.4f  F1 = %0.4f ARI = %0.4f" % (p, r, f1, ari))
+		# print("Precision = %0.4f  Recall = %0.4f  F1 = %0.4f ARI = %0.4f" % (p, r, f1, ari))
 
 		init_labels_dict = {cons[i]:y_pred[i] for i in range(len(y_pred))}
 
 
-		### GCN-Label Propogation
+		### GCN-Label Annotation
 		print()
-		print("### Step 2: GCN-based Label Propogation model.")
+		print("### Step 2: Constraint-based Binning model.")
 
 		idxs = [idx for idx,val in init_labels_dict.items()]
 		mask = np.array([True if idx in idxs else False for idx in range(n_nodes)])
@@ -271,3 +274,4 @@ class RepBin(nn.Module):
 		p = torch.index_select(embeds, 0, neg_pairs[:,0])
 		q = torch.index_select(embeds, 0, neg_pairs[:,1])
 		return torch.exp(-F.pairwise_distance(p, q, p=2)).mean()
+

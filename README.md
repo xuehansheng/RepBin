@@ -3,8 +3,10 @@
 This is the source code for xxx paper ["RepBin: Constraint-based Graph Representation Learning for Metagenomic Binning"](xxx).
 
 ## Overview
+![image](pipeline.jpg)
 ![image](RepBin.jpg)
 The RepBin mainly contains two components, (i) graph representation learning that preserves both homophily relations and heterophily constraints (ii) constraint-based graph clustering method that addresses the problems of skewed cluster size distribution.
+![image](visualization.jpg)
 
 ## Requirement
 ```

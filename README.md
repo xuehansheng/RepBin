@@ -23,11 +23,11 @@ python3 main.py --dataset Sim-5G --n_clusters 5 --patience 20
 
 ## Reference
 All readers are welcome to star/fork this repository and use it to reproduce our experiments or train your own data. Please kindly cite our paper:
-```
+```bibtex
 @inproceedings{Xue2022RepBin,
   title     = {RepBin: Constraint-based Graph Representation Learning for Metagenomic Binning},
   author    = {Xue, Hansheng and Mallawaarachchi, Vijini and Zhang, Yujia and Rajan, Vaibhav and Lin, Yu},
-  booktitle = {xxx},
+  booktitle = {AAAI},
   year      = {2022}
 }
 ```

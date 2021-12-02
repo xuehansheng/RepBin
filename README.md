@@ -19,7 +19,7 @@ The RepBin mainly contains two components, (i) ***Constraint-based learning***: 
 To better understand the binning results, we use python-iGraph package to visualize the Sim-10G assembly graph with ground truth and binning results from distinct stand-alone binning tools (see Figure 3). Different colors denote distinct species and grey nodes indicate the nodes that are not identified or are discarded. Black edges represent homophily edges in the assembly graph and grey edges are heterophily constraints. RepBin achieves the most consistent labels with respect to the ground truth while other baselines suffering from missing or incorrect labels.
 
 <p align="center">
-  <img src="visualization.jpg" width="750" title="The framework of our proposed RepBin model.">
+  <img src="visualization.jpg" width="750" title="Visualization of the Sim-10G assembly graph with ground truth and different binning results.">
 </p>
 
 

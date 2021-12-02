@@ -10,7 +10,7 @@ Most metagenomics binning tools ignore the homophily information in assembly gra
   <img src="pipeline.jpg" width="650" title="The pipeline of traditional metagenomic contigs binning and our proposed method, RepBin.">
 </p>
 
-The RepBin mainly contains two components, (i) ***Constraint-based learning***: representation learning on the assembly graph that preserves both homophily relations and heterophily constraints; (ii) ***Constraint-based binning***: using graph convolutional networks to annotate unknown contigs with labels while using constrained contigs to obtain initial labels.
+The RepBin mainly contains two components, (i) ***Constraint-based Learning***: representation learning on the assembly graph that preserves both homophily relations and heterophily constraints; (ii) ***Constraint-based Binning***: using graph convolutional networks to annotate unknown contigs with labels while using constrained contigs to obtain initial labels.
 
 <p align="center">
   <img src="RepBin.jpg" width="750" title="The framework of our proposed RepBin model.">

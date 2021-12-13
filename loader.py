@@ -59,12 +59,10 @@ def remove_duplicates(constraints):
 def load_contigs_fasta_markers(file_path, contigs_map):
 	raw_data = np.loadtxt(file_path, delimiter=': ', dtype=str)[:,1]
 	raw_data = np.array([line.split(', ') for line in raw_data])
-	# print(raw_data) #[['NODE_49' 'NODE_5' 'NODE_74' 'NODE_94' 'NODE_67']]
 	data = []
 	contigs_map_rev = contigs_map.inverse
 	for line in raw_data:
 		data.append([contigs_map_rev[int(val.split('_')[1])] for val in line])
-	# print(data) #[[48, 4, 73, 93, 66]]
 	matrix_cons = np.zeros((len(contigs_map_rev),len(contigs_map_rev)))
 	for line in data:
 		for i in range(len(line)):
@@ -171,7 +169,6 @@ def load_assembly_graph(assembly_graph_file, node_count, contigs_map, paths, seg
 	for edge in edge_list:
 		adj[edge[0],edge[1]] = 1.0
 		adj[edge[1],edge[0]] = 1.0
-	# print(len(edge_list))
 	adj_sp = sp.csr_matrix(adj)
 	return adj_sp, edge_list
 
@@ -243,18 +240,13 @@ def filter_isolatedNodes(assembly_graph, constraints, edges, ground_truth_dict, 
 	cons = list(set([val for line in constraints for val in line]))
 	isoNodes = []
 	for idx in range(assembly_graph.shape[0]):
-		# if Gx.degree(idx) == 0 and idx not in cons:
 		if Gx.degree(idx) == 0:
 			isoNodes.append(idx)
 
-	# print(len(isoNodes)) #21570
 	nodes = [idx for idx in range(assembly_graph.shape[0])]
 	diffNodes = list(set(nodes).difference(set(isoNodes)))
-	# print(len(diffNodes)) #20743
 	nodeIDsMap = {j:i for i,j in enumerate(diffNodes)}
-	# print(nodeIDsMap)
 	newEdges = [[nodeIDsMap[line[0]], nodeIDsMap[line[1]]] for line in edges]
-	# print(len(edges), len(newEdges))
 	newConstraints = []
 	for line in constraints:
 		temp = []
@@ -262,13 +254,11 @@ def filter_isolatedNodes(assembly_graph, constraints, edges, ground_truth_dict, 
 			if val in diffNodes:
 				temp.append(nodeIDsMap[val])
 		newConstraints.append(temp)
-	# print(len(constraints), len(newConstraints))
 
 	newGroundTruth = dict()
 	for key,val in ground_truth_dict.items():
 		if key in diffNodes:
 			newGroundTruth[nodeIDsMap[key]] = val
-	# print(len(ground_truth_dict), len(newGroundTruth))
 
 	Gx = nx.Graph()
 	Gx.add_nodes_from(diffNodes)
@@ -277,7 +267,6 @@ def filter_isolatedNodes(assembly_graph, constraints, edges, ground_truth_dict, 
 		Gx.add_edge(edge[1], edge[0])
 
 	adj = np.zeros((len(diffNodes),len(diffNodes)))
-	# adj = np.eye(len(diffNodes))
 	for edge in newEdges:
 		adj[edge[0],edge[1]] = 1.0
 		adj[edge[1],edge[0]] = 1.0

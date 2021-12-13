@@ -39,10 +39,7 @@ print('----------args----------\n')
 
 def main():
 	assembly_graph, constraints, ground_truth, Gx = load_data(args.dataset)
-	# print(assembly_graph.shape, len(constraints), len(ground_truth))
-	# print(len(list(set([val for key,val in ground_truth.items()]))))
 	triplets = sample_constraints(constraints, ground_truth)
-	# print(constraints)
 
 	adj = Graph_Diffusion_Convolution(assembly_graph, args.alpha, args.eps)
 	adj = sparse_to_tuple(adj)

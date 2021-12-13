@@ -25,17 +25,12 @@ def Graph_Diffusion_Convolution(A: sp.csr_matrix, alpha: float, eps: float):
 	N = A.shape[0]
 	# Self-loops
 	A_loop = sp.eye(N) + A
-	# Symmetric transition matrix
 	D_loop_vec = A_loop.sum(0).A1
 	D_loop_vec_invsqrt = 1 / np.sqrt(D_loop_vec)
 	D_loop_invsqrt = sp.diags(D_loop_vec_invsqrt)
 	T_sym = D_loop_invsqrt @ A_loop @ D_loop_invsqrt
-	# PPR-based diffusion
 	S = alpha * sp.linalg.inv(sp.eye(N) - (1 - alpha) * T_sym)
-	# Sparsify using threshold epsilon
 	S_tilde = S.multiply(S >= eps)
-	# S_tilde = S
-	# Column-normalized transition matrix on graph S_tilde
 	D_tilde_vec = S_tilde.sum(0).A1
 	T_S = S_tilde / D_tilde_vec
 
@@ -46,31 +41,19 @@ class Learning:
 	def __init__(self, ipt_dim, hid_dim, opt_dim, args):
 		self.args = args
 		self.model = RepBin(ipt_dim, hid_dim, opt_dim, 'prelu')
-		# if device != None:
 		self.model = self.model.to(device)
 
 	def train(self, adj, feats, Gx, samples, constraints, ground_truth):
 		n_nodes = adj[2][0]
-		# adj = torch.FloatTensor(adj)
 		adj = torch.sparse.FloatTensor(torch.LongTensor(adj[0].T),torch.FloatTensor(adj[1]),torch.Size(adj[2])).to(device)
 		feats = torch.FloatTensor(feats[np.newaxis]).to(device)
-		# feats = torch.sparse.FloatTensor(torch.LongTensor(feats_[0].T),torch.FloatTensor(feats_[1]),torch.Size(feats_[2])).to(device)
 		samples = torch.LongTensor(samples).to(device)
-		# matrix = torch.FloatTensor(matrix_cons[np.newaxis])
 
 		optimizer = torch.optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay)
 		b_xent = nn.BCEWithLogitsLoss()
 		cnt_wait, best, best_t = 0, 1e9, 0
 
 		print("### Step 1: Constraint-based Learning model.")
-
-		# print("--------trainable parameters--------")
-		# print(self.model)
-		# for parameter in self.model.parameters():
-		# 	print(parameter.shape)
-		# print("--------trainable parameters--------")
-		# print()
-
 		list_loss,list_losss,list_lossc = [],[],[]
 		list_p,list_r,list_f1,list_ari = [],[],[],[]
 		for epoch in range(self.args.epochs):
@@ -109,68 +92,35 @@ class Learning:
 		self.model.load_state_dict(torch.load('best_model.pkl'))
 		self.model.eval()
 		embeds, _ = self.model.embed(feats, adj, True)
-		# print(embeds.shape)
 		print("### Optimization Finished!")
-		# print("### Run K-Means Clustering Algorithm:")
 		true_labels = ground_truth
-		# print(Counter([v for k,v in true_labels.items()]))
-		# np.save('Sharon_emb_12.npy', embeds.cpu().detach().numpy())
-		# embs = np.load('Sharon_emb_12.npy')
-		# pred_labels = Clustering(embeds.cpu().detach().numpy(), true_labels, constraints, Gx, n_clusters=self.args.n_clusters)
-		# pred_labels = Cluster(embeds.cpu().detach().numpy(), true_labels, n_clusters=self.args.n_clusters)
 
-
-		# print("\n### Evaluate the performance of constraints.")
 		lbls_idx = [k for k,v in true_labels.items()]
-		# CNTs = Counter([val for line in constraints for val in line])
-		# cons = list(set([val for line in constraints for val in line])) #80/265 131/413
 		cons = [val for line in constraints for val in line if val in lbls_idx]
-		# print(len(cons)) #804
-		# cons = list(set(cons))
-		# print(len(list(set(cons)))) #223
-		# print(Counter(cons))
-		# cons = [k for k,v in Counter(cons).items() if v>3]
 		cons = [k for k,v in Counter(cons).items() if v>3]
-		# print(cons)
-		# print(len(cons))
-		# print(len(Counter([true_labels[c] for c in cons])),Counter([true_labels[c] for c in cons]))
 		n_clusters = len(Counter([true_labels[c] for c in cons]))
-		# n_clusters = self.args.n_clusters
 		embs = embeds.cpu().detach().numpy()[cons]
-		# print(embs.shape)
-		# embs = embs[cons]
 		labels = list(set([true_labels[i] for i in cons]))
-		# print(len(labels))
 		labels_map = {idx:i for i,idx in enumerate(labels)}
 		lbls = {i:true_labels[idx] for i,idx in enumerate(cons)}
 
 
 		from sklearn.cluster import KMeans
-		# kmeans = KMeans(n_clusters=n_clusters)
 		kmeans = KMeans(n_clusters=self.args.n_clusters)
 		y_pred = kmeans.fit_predict(embs)
-
-		# # print(y_pred)
-		# print(len(Counter(y_pred)),Counter(y_pred))
 		pred_labels = {i:j for i,j in enumerate(y_pred)}
-		# pred_labels = {i:y_pred[i] for i,idx in enumerate(cons)}
 		p, r, ari, f1 = validate_performance(lbls, pred_labels)
-		# print("Precision = %0.4f  Recall = %0.4f  F1 = %0.4f ARI = %0.4f" % (p, r, f1, ari))
-
 		init_labels_dict = {cons[i]:y_pred[i] for i in range(len(y_pred))}
 
 
 		### GCN-Label Annotation
 		print()
 		print("### Step 2: Constraint-based Binning model.")
-
 		idxs = [idx for idx,val in init_labels_dict.items()]
 		mask = np.array([True if idx in idxs else False for idx in range(n_nodes)])
-		# init_labels = init_labels.argmax(dim=1)
 		init_labels = [init_labels_dict[idx] if idx in idxs else 0 for idx in range(n_nodes)]
 		init_labels = torch.LongTensor(init_labels).to(device)
 		mask = torch.LongTensor(mask).to(device)
-		# all_labels = torch.LongTensor(all_labels).to(device)
 
 		listg_loss = []
 		listg_p,listg_r,listg_f1,listg_ari = [],[],[],[]
@@ -210,10 +160,8 @@ class Learning:
 		self.model.load_state_dict(torch.load('best_model_lp.pkl'))
 		self.model.eval()
 		out = self.model.labelProp(feats, adj, True)
-		pred = out.argmax(dim=1) #519
+		pred = out.argmax(dim=1)
 		pred_dict = {i:j.item() for i,j in enumerate(pred)}
-		# validate_performance(ground_truth, pred_dict)
-		# validate_ARI_NMI(ground_truth, pred_dict)
 		return pred_dict
 
 
@@ -221,26 +169,17 @@ class RepBin(nn.Module):
 	def __init__(self, n_in, n_h, n_opt, act):
 		super(RepBin, self).__init__()
 		self.gcn = GCN(n_in, n_h, act)
-		# self.gcn_ = GCN(2*n_h, n_h, act)
 		self.readout = AvgReadout()
 		self.sigm = nn.Sigmoid()
 		self.disc = Discriminator(n_h)
 		self.gcn2 = GCN(n_h, n_opt, 'prelu')
 
-		# self.layers = nn.Sequential(self.gcn, self.gcn2)
-
 	def forward(self, seq1, seq2, adj, sparse, samp_bias1, samp_bias2):
 		h_1 = self.gcn(seq1, adj, sparse)
-		# h_1 = self.gcn_(h_1, adj, sparse)
 		c = self.readout(h_1)
 		c = self.sigm(c)
 		h_2 = self.gcn(seq2, adj, sparse)
-		# h_2 = self.gcn_(h_2, adj, sparse)
-		# print(c.shape, h_1.shape, h_2.shape)
-		# h_1 = F.dropout(h_1, 0.3, training=self.training)
-		# c = nn.Dropout(p=0.5)(c)
 		ret = self.disc(c, h_1, h_2, samp_bias1, samp_bias2)
-		# print(ret.shape)
 		return ret, h_1.squeeze(0)
 
 	# Detach the return variables
@@ -253,10 +192,8 @@ class RepBin(nn.Module):
 
 	def labelProp(self, seq, adj, sparse):
 		h = self.gcn(seq, adj, sparse)
-		# print(h.shape)
 		h = self.gcn2(h, adj, sparse)
 		# h = F.log_softmax(self.gcn2(h, adj, sparse))
-		# print(h.shape)
 		return h.squeeze(0)
 		# return h
 

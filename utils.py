@@ -17,7 +17,6 @@ def sparse_to_tuple(sparse_mx):
 		coords = np.vstack((mx.row, mx.col)).transpose()
 		values = mx.data
 		shape = mx.shape
-		# print(len(mx.row),len(mx.col),len(mx.data),mx.shape)
 		return coords, values, shape
 
 	if isinstance(sparse_mx, list):
@@ -74,6 +73,5 @@ def sample_constraints(cons, ground_truth):
 			node_b = int(key.split('_')[1])
 			# if adj[node_a,node_b] == 0.0 and adj[node_b,node_a] == 0.0:
 			all_pairs_new.append([node_a, node_b])
-	# print("### Number of extracted constraint pairs(sym):", len(all_pairs_new))
 	# return np.array(all_pairs_new)
 	return np.array(all_pairs)

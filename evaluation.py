@@ -92,7 +92,6 @@ def list_duplicates(seq):
 	tally = defaultdict(list)
 	for i,item in enumerate(seq):
 		tally[item].append(i)
-	# return ((key,locs) for key,locs in tally.items() if len(locs)>1)
 	return (locs for key,locs in tally.items() if len(locs)>1)
 
 
@@ -106,7 +105,6 @@ def Clustering(embeds, true_labels, constraints, Gx, n_clusters=5):
 		pred_labels = {i:j for i,j in enumerate(pred_labels_)}
 
 		p, r, ari, f1 = validate_performance(true_labels, pred_labels)
-		# print("### Precision = %0.4f Recall = %0.4f F1 = %0.4f ARI = %0.4f" %(p, r, f1, ari))
 		p_all.append(p)
 		r_all.append(r)
 		ari_all.append(ari)
@@ -132,7 +130,6 @@ def Cluster(embeds, true_labels, n_clusters=5):
 		true_idx = [key for key,val in true_labels.items()]
 		true_lbls = [val for key,val in true_labels.items()]
 		pred_lbls = [pred_labels[idx] for idx in true_idx]
-		# print(len(true_lbls), len(pred_lbls))
 
 		Mf1 = f1_score(true_lbls, pred_lbls, average='macro')
 		Mf1_all.append(Mf1)
@@ -152,16 +149,12 @@ def Cluster(embeds, true_labels, n_clusters=5):
 
 
 def validate_ARI_NMI(true_labels, pred_labels):
-	# pred_labels = {i:j for i,j in enumerate(pred_labels_)}
 	true_idx = [key for key,val in true_labels.items()]
 	true_lbls = [val for key,val in true_labels.items()]
 	pred_lbls = [pred_labels[idx] for idx in true_idx]
 
-	# Mf1 = f1_score(true_lbls, pred_lbls, average='macro')
-	# mf1 = f1_score(true_lbls, pred_lbls, average='micro')
 	ari = adjusted_rand_score(true_lbls, pred_lbls)
 	nmi = normalized_mutual_info_score(true_lbls, pred_lbls)
-	# print ("### macro-F1 = %0.4f, micro-F1 = %0.4f, ARI = %0.4f, NMI = %0.4f"  % (Mf1,mf1,ari,nmi))
 	return ari, nmi
 
 

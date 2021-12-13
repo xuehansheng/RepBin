@@ -50,7 +50,6 @@ def glorot_init(input_dim, output_dim):
 	initial = torch.rand(input_dim, output_dim)*2*init_range - init_range
 	return nn.Parameter(initial)
 
-
 def sample_constraints(cons, ground_truth):
 	all_pairs = []
 	all_pairs_cnt = []

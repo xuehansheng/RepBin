@@ -20,7 +20,6 @@ class BidirectionalError(Exception):
 
 class BidirectionalMap(dict):
 	"""Invertible map."""
-
 	def __init__(self, inverse=None):
 		if inverse is None:
 			inverse = self.__class__(inverse=self)
@@ -29,7 +28,6 @@ class BidirectionalMap(dict):
 	def __setitem__(self, key, value):
 		if value in self.inverse:
 			raise BidirectionalError(value)
-
 		self.inverse._set_item(value, key)
 		self._set_item(key, value)
 
@@ -69,7 +67,6 @@ def load_contigs_fasta_markers(file_path, contigs_map):
 			for j in range(i+1, len(line)):
 				matrix_cons[line[i],line[j]] = 1.0
 				matrix_cons[line[j],line[i]] = 1.0
-
 	return data, sp.csr_matrix(matrix_cons)
 
 
@@ -112,7 +109,6 @@ def load_contigs(contig_paths):
 
 	contigs_map = my_map
 	contigs_map_rev = my_map.inverse
-
 	return node_count, contigs_map, paths, segment_contigs
 
 
@@ -126,7 +122,6 @@ def load_assembly_graph(assembly_graph_file, node_count, contigs_map, paths, seg
 			if "L" in line:
 				strings = line.split("\t")
 				f1, f2 = strings[1]+strings[2], strings[3]+strings[4]
-
 				links_map[f1].add(f2)
 				links_map[f2].add(f1)
 				links.append(strings[1]+strings[2]+" "+strings[3]+strings[4])
@@ -273,7 +268,4 @@ def filter_isolatedNodes(assembly_graph, constraints, edges, ground_truth_dict, 
 	adj_sp = sp.csr_matrix(adj)
 
 	return adj_sp, newConstraints, newGroundTruth, Gx
-
-
-
 

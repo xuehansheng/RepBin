@@ -23,8 +23,7 @@ import time
 
 def Graph_Diffusion_Convolution(A: sp.csr_matrix, alpha: float, eps: float):
 	N = A.shape[0]
-	# Self-loops
-	A_loop = sp.eye(N) + A
+	A_loop = sp.eye(N) + A #Self-loops
 	D_loop_vec = A_loop.sum(0).A1
 	D_loop_vec_invsqrt = 1 / np.sqrt(D_loop_vec)
 	D_loop_invsqrt = sp.diags(D_loop_vec_invsqrt)
@@ -62,7 +61,6 @@ class Learning:
 			# corruption
 			rnd_idx = np.random.permutation(n_nodes)
 			shuf_fts = feats[:,rnd_idx,:].to(device)
-
 			# labels
 			lbl_1 = torch.ones(self.args.batch_size, n_nodes)
 			lbl_2 = torch.zeros(self.args.batch_size, n_nodes)
@@ -104,14 +102,12 @@ class Learning:
 		labels_map = {idx:i for i,idx in enumerate(labels)}
 		lbls = {i:true_labels[idx] for i,idx in enumerate(cons)}
 
-
 		from sklearn.cluster import KMeans
 		kmeans = KMeans(n_clusters=self.args.n_clusters)
 		y_pred = kmeans.fit_predict(embs)
 		pred_labels = {i:j for i,j in enumerate(y_pred)}
 		p, r, ari, f1 = validate_performance(lbls, pred_labels)
 		init_labels_dict = {cons[i]:y_pred[i] for i in range(len(y_pred))}
-
 
 		### GCN-Label Annotation
 		print()
@@ -121,26 +117,20 @@ class Learning:
 		init_labels = [init_labels_dict[idx] if idx in idxs else 0 for idx in range(n_nodes)]
 		init_labels = torch.LongTensor(init_labels).to(device)
 		mask = torch.LongTensor(mask).to(device)
-
-		listg_loss = []
-		listg_p,listg_r,listg_f1,listg_ari = [],[],[],[]
-		loss_last = 1e9
+		listg_loss,loss_last = [],1e9
 		for epoch in range(1000):
 			self.model.train()
 			optimizer.zero_grad()
-
 			out = self.model.labelProp(feats, adj, True)
 			loss = F.cross_entropy(out, init_labels, reduction='none')
 			mask = mask.float()
 			mask = mask / mask.mean()
 			loss *= mask
 			loss = loss.mean()
-
 			listg_loss.append(loss.item())
-
 			# loss += self.args.weight_decay * self.model.l2_loss()
 
-			pred = out.argmax(dim=1) #519
+			pred = out.argmax(dim=1)
 			pred_dict = {i:j.item() for i,j in enumerate(pred)}
 			p, r, ari, f1 = validate_performance(ground_truth, pred_dict)
 
@@ -182,7 +172,6 @@ class RepBin(nn.Module):
 		ret = self.disc(c, h_1, h_2, samp_bias1, samp_bias2)
 		return ret, h_1.squeeze(0)
 
-	# Detach the return variables
 	def embed(self, seq, adj, sparse):
 		h_1 = self.gcn(seq, adj, sparse)
 		c = self.readout(h_1)

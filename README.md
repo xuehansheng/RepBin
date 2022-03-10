@@ -1,6 +1,6 @@
 # RepBin
 A PyTorch implementation for the [AAAI-2022](https://aaai.org/Conferences/AAAI-22/) paper:<br>
-RepBin: Constraint-based Graph Representation Learning for Metagenomic Binning [[ArXiv](https://arxiv.org/abs/2112.11696)]<br>
+RepBin: Constraint-Based Graph Representation Learning for Metagenomic Binning [[ArXiv](https://arxiv.org/abs/2112.11696)]<br>
 [Hansheng Xue](https://xuehansheng.github.io/), [Vijini Mallawaarachchi](https://vijinimallawaarachchi.com/), Yujia Zhang, [Vaibhav Rajan](https://sites.google.com/view/vaibhavrajan/), and [Yu Lin](http://users.cecs.anu.edu.au/~u1024708/)
 
 ## Overview
@@ -42,7 +42,7 @@ python3 main.py --dataset Sim-5G --n_clusters 5 --patience 20
 All readers are welcome to star/fork this repository and use it to reproduce our experiments or train your own data. Please kindly cite our paper:
 ```bibtex
 @inproceedings{Xue2022RepBin,
-  title     = {RepBin: Constraint-based Graph Representation Learning for Metagenomic Binning},
+  title     = {RepBin: Constraint-Based Graph Representation Learning for Metagenomic Binning},
   author    = {Xue, Hansheng and Mallawaarachchi, Vijini and Zhang, Yujia and Rajan, Vaibhav and Lin, Yu},
   booktitle = {AAAI},
   year      = {2022}
